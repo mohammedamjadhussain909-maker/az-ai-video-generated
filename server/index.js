@@ -13,7 +13,7 @@ app.use(express.json())
 app.get('/api/health', (_req, res) => res.json({ ok: true, provider: Boolean(process.env.REPLICATE_API_TOKEN) ? 'replicate' : 'not-configured' }))
 
 app.post('/api/videos', async (req, res) => {
-  const { prompt, aspectRatio = '16:9', duration = '8 seconds', quality = '1080p', style = 'Cinematic' } = req.body
+  const { prompt, aspectRatio = '16:9', duration = '8 seconds', quality = '1080p', style = 'Cinematic', contentType = 'Long story', voice = 'No voiceover', music = 'No background music' } = req.body
   if (!prompt?.trim()) return res.status(400).json({ error: 'A prompt is required.' })
   if (!process.env.REPLICATE_API_TOKEN) return res.status(503).json({ error: 'Replicate is not configured. Add REPLICATE_API_TOKEN to server/.env.' })
   if (!process.env.REPLICATE_MODEL) return res.status(503).json({ error: 'Add REPLICATE_MODEL to server/.env.' })
@@ -23,7 +23,7 @@ app.post('/api/videos', async (req, res) => {
     const response = await fetch(`https://api.replicate.com/v1/models/${owner}/${name}/predictions`, {
       method: 'POST',
       headers: { Authorization: `Bearer ${process.env.REPLICATE_API_TOKEN}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ input: { prompt: `${style} style: ${prompt.trim()}`, aspect_ratio: aspectRatio, duration, quality } }),
+      body: JSON.stringify({ input: { prompt: `${contentType}, ${style} style, voice: ${voice}, background music: ${music}. ${prompt.trim()}`, aspect_ratio: aspectRatio, duration, quality } }),
     })
     const prediction = await response.json()
     if (!response.ok) return res.status(response.status).json({ error: prediction.detail || 'Replicate could not start the video.' })
