@@ -17,6 +17,7 @@ function App() {
   const [isGenerating, setIsGenerating] = useState(false)
   const [aspect, setAspect] = useState('16:9')
   const [duration, setDuration] = useState('8 seconds')
+  const [quality, setQuality] = useState('1080p')
   const [showPricing, setShowPricing] = useState(false)
   const [selectedPlan, setSelectedPlan] = useState(null)
   const [generationError, setGenerationError] = useState('')
@@ -37,8 +38,8 @@ function App() {
     setIsGenerating(true)
     setGenerationError('')
     try {
-      const videoUrl = await createVideo({ prompt, aspectRatio: aspect, duration })
-      setVideos([{ title: prompt.trim().slice(0, 32), meta: `AI video · ${aspect} · ${duration}`, color: 'aurora', state: 'Ready', videoUrl }, ...videos])
+      const videoUrl = await createVideo({ prompt, aspectRatio: aspect, duration, quality })
+      setVideos([{ title: prompt.trim().slice(0, 32), meta: `AI video · ${aspect} · ${duration} · ${quality}`, color: 'aurora', state: 'Ready', videoUrl }, ...videos])
       setPrompt('')
       setActiveTab('Library')
     } catch (error) {
@@ -65,7 +66,7 @@ function App() {
       <main className="main-content">
         <header className="topbar"><div className="mobile-brand"><span className="brand-mark"><Sparkle /></span> AZ AI</div><div className="breadcrumbs"><span>Workspace</span><b>/</b><strong>{activeTab}</strong></div><div className="top-actions"><button className="icon-button">⌘ K</button><button className="notification">♢<i /></button><div className="mini-avatar">AM</div></div></header>
         {activeTab === 'Create' && <section className="create-view"><div className="eyebrow"><Sparkle small /> AI VIDEO STUDIO</div><h1>Turn your ideas<br /><span>into motion.</span></h1><p className="intro">Describe a scene, a feeling, or a story. AZ brings it to life in seconds.</p>
-          <div className="generator"><div className="prompt-wrap"><textarea value={prompt} onChange={e => setPrompt(e.target.value)} placeholder="A slow aerial shot of a quiet coastal town at golden hour..." /><div className="prompt-footer"><span className="prompt-hint"><Sparkle small /> Tip: be descriptive about movement, mood, and light</span><span className="char-count">{prompt.length} / 500</span></div></div><div className="generator-options"><div className="option-group"><label>Format</label><div className="segmented">{['16:9', '9:16', '1:1'].map(value => <button key={value} onClick={() => setAspect(value)} className={aspect === value ? 'selected' : ''}>{value}</button>)}</div></div><div className="option-group"><label>Duration</label><select className="select" value={duration} onChange={e => setDuration(e.target.value)}>{['8 seconds', '30 seconds', '1 minute', '5 minutes', '10 minutes', '20 minutes'].map(value => <option key={value}>{value}</option>)}</select></div><button className="generate" onClick={generateVideo} disabled={!prompt.trim() || isGenerating}>{isGenerating ? 'Creating...' : <><Sparkle small /> Generate video</>}</button></div>{generationError && <p className="generation-error">{generationError}</p>}</div>
+          <div className="generator"><div className="prompt-wrap"><textarea value={prompt} onChange={e => setPrompt(e.target.value)} placeholder="A slow aerial shot of a quiet coastal town at golden hour..." /><div className="prompt-footer"><span className="prompt-hint"><Sparkle small /> Tip: be descriptive about movement, mood, and light</span><span className="char-count">{prompt.length} / 500</span></div></div><div className="generator-options"><div className="option-group"><label>Format</label><div className="segmented">{['16:9', '9:16', '1:1'].map(value => <button key={value} onClick={() => setAspect(value)} className={aspect === value ? 'selected' : ''}>{value}</button>)}</div></div><div className="option-group"><label>Duration</label><select className="select" value={duration} onChange={e => setDuration(e.target.value)}>{['8 seconds', '30 seconds', '1 minute', '5 minutes', '10 minutes', '20 minutes'].map(value => <option key={value}>{value}</option>)}</select></div><div className="option-group"><label>Quality</label><select className="select" value={quality} onChange={e => setQuality(e.target.value)}>{['480p', '720p', '1080p', '4K'].map(value => <option key={value}>{value}</option>)}</select></div><button className="generate" onClick={generateVideo} disabled={!prompt.trim() || isGenerating}>{isGenerating ? 'Creating...' : <><Sparkle small /> Generate video</>}</button></div>{generationError && <p className="generation-error">{generationError}</p>}</div>
           <div className="examples"><span>Try an idea</span>{['A paper city unfolding', 'Dolphins under moonlight', 'A chef in zero gravity'].map(example => <button key={example} onClick={() => setPrompt(example)}>{example} <span>↗</span></button>)}</div>
           <div className="recent-heading"><h2>Recent creations</h2><button onClick={() => setActiveTab('Library')}>View library <span>→</span></button></div><div className="video-grid">{videos.slice(0, 2).map(video => <VideoCard key={video.title} video={video} />)}</div>
         </section>}
