@@ -1,0 +1,7 @@
+{
+  "name": "az-ai-video-generated-server",
+  "private": true,
+  "type": "module",
+  "scripts": { "dev": "node --watch index.js", "start": "node index.js" },
+  "dependencies": { "cors": "latest", "dotenv": "latest", "express": "latest", "stripe": "latest" }
+}
